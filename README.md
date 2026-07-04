@@ -70,24 +70,26 @@ his-afp
 1. **Eseguire in fork del progetto su GitHub**
 2. Clonare il repository: `git clone <url-del-repo>`
 3. Spostarsi nella cartella del progetto: `cd his-afp`
-4. Creare un nuovo branch per le modifiche: `git checkout -b uf15-2026/nome-cognome`
-5. Avviare i container Docker: `docker-compose up -d --build`
-6. Accedere al backend API su `http://localhost:3000`
+4. Creare un nuovo branch per le modifiche: `git checkout -b uf14-migrazione-architetturale`
+5. Avviare i container Docker tramite il gateway: `PROD_VERSION=prod TEST_VERSION=test SVI_VERSION=svi docker compose up -d --build`
+6. Accedere all'applicazione tramite gli URL pubblicati dal gateway.
 
 # Avvio dei servizi
 
 Per avviare i servizi, eseguire il comando:
 
 ```bash
-docker-compose up -d --build
+PROD_VERSION=prod TEST_VERSION=test SVI_VERSION=svi docker compose up -d --build
 ```
 
 Questo comando costruisce e avvia i container definiti nel file `docker-compose.yml`.
+I tre tag versione evitano che i frontend di produzione, test e sviluppo provino a costruire la stessa immagine
+`his-afp:latest` in parallelo.
 
 Per fermare i servizi, eseguire:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 L'opzione `-v` rimuove anche i volumi associati, in modo da avere un ambiente pulito al successivo avvio.
@@ -95,13 +97,17 @@ L'opzione `-v` rimuove anche i volumi associati, in modo da avere un ambiente pu
 Per ricompilare un singolo servizio (es. backend), eseguire:
 
 ```bash
-docker-compose up -d --build --no-deps backend
+docker compose up -d --build --no-deps backend
 ```
 
 # Accessi
 
-- **Backend API:** `http://localhost:3000`
-- **Database PostgreSQL:** `localhost:5432` (user: `sio_user`, password: `sio_password`, database: `sio_db`)
+- **Frontend produzione:** `http://localhost`
+- **Frontend test:** `http://localhost:8080`
+- **Frontend SVI:** `http://localhost:8999`
+- **Backend API:** accessibile solo tramite gateway, per esempio `http://localhost/api/health`
+- **Database PostgreSQL:** non esposto direttamente su `localhost:5432`; è raggiungibile solo dal backend sulla rete
+  Docker protetta `backend-net`.
 
 # Test delle API
 
@@ -112,10 +118,11 @@ Per testare le API sono disponibili le collection Postman nella cartella `postma
 
 # Documentazione
 
-Allinterno della cartella `docs/` sono presenti documenti dettagliati riguardanti:
+All'interno della cartella `docs/` sono presenti documenti dettagliati riguardanti:
 
 - Documentazione delle API: [docs/API.md](docs/API.md)
 - Struttura del Database: [docs/DATABASE.md](docs/DATABASE.md)
+- Migrazione architetturale UF14: [docs/migrazione-architetturale.md](docs/migrazione-architetturale.md)
 
 # Contribuire
 
