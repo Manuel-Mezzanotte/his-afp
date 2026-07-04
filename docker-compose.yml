@@ -78,3 +78,7 @@ services:
 
 volumes:
   pg_data:
+
+networks:
+  frontend-net:
+  backend-net:
