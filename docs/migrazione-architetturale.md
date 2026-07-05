@@ -288,12 +288,52 @@ Risultato:
 - il gateway punta a `backend-blue:3000`
 - l'API risponde con `service: UP` e `database: CONNECTED`
 
+## Task 4 - Tunnel database dal gateway
+
+La Task 4 serve a raggiungere PostgreSQL senza esporre direttamente il servizio
+`db`.
+
+Il database resta senza `ports`. La porta `5432` viene pubblicata solo dal
+gateway:
+
+```yaml
+ports:
+  - "5432:5432"
+```
+
+PostgreSQL non usa HTTP, quindi non basta aggiungere una location nel
+`default.conf`. Nel file `gateway/nginx.conf` ho usato il blocco `stream`:
+
+```nginx
+stream {
+    server {
+        listen 5432;
+        proxy_pass db:5432;
+    }
+}
+```
+
+Test eseguiti:
+
+```bash
+nc -zv 127.0.0.1 5432
+docker run --rm postgres:15-alpine psql 'postgresql://sio_user:sio_password@host.docker.internal:5432/sio_db' -c 'select 1 as tunnel_ok;'
+```
+
+Risultato: la porta risponde e la query `select 1` va a buon fine passando dal
+gateway.
+
+Nota: questa soluzione apre comunque una porta verso il database. In un caso
+reale la limiterei con VPN, allowlist IP, utenti read-only e logging degli
+accessi.
+
 ## Conclusione
 
 La Task 1 isola i frontend dal database. La Task 2 aggiunge due backend e
 permette lo switch Blue/Green tramite gateway, senza cambiare URL al frontend.
 La Task 3 definisce come gestire modifiche al database senza rompere Blue mentre
-Green viene testato.
+Green viene testato. La Task 4 permette l'accesso al database passando dal
+gateway, senza esporre direttamente il container `db`.
 
 Possibili miglioramenti futuri: healthcheck Docker, gestione migliore dei
 segreti, logging centralizzato e TLS sul gateway.
