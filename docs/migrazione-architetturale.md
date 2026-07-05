@@ -243,6 +243,51 @@ Eviterei invece di rinominare o eliminare colonne usate da Blue, oppure di
 aggiungere colonne `NOT NULL` senza default. Queste modifiche potrebbero rompere
 la versione stabile mentre è ancora in produzione.
 
+### Frontend e JWT
+
+Il frontend non deve essere ricaricato se l'URL resta `/api/` e le risposte del
+backend restano compatibili.
+
+Se Green cambia il contratto delle API, allora bisogna coordinare anche il
+rilascio del frontend.
+
+Le sessioni JWT continuano a funzionare se Blue e Green usano lo stesso
+`JWT_SECRET` e validano i token nello stesso modo. Se Green cambia secret o
+formato del token, gli utenti potrebbero dover rifare login.
+
+### Docker Compose
+
+I due backend possono stare accesi insieme perché ascoltano sulla porta interna
+`3000`, ma non pubblicano porte verso l'host.
+
+Il gateway li raggiunge tramite DNS Docker:
+
+```text
+backend-blue:3000
+backend-green:3000
+```
+
+Entrambi usano lo stesso servizio `db`, quindi il punto delicato resta la
+compatibilità dello schema dati.
+
+### Verifica
+
+Comandi usati:
+
+```bash
+PROD_VERSION=prod TEST_VERSION=test SVI_VERSION=svi docker compose ps
+docker exec sio-backend-blue sh -c 'getent hosts db'
+docker exec sio-backend-green sh -c 'getent hosts db'
+curl http://localhost/api/health
+```
+
+Risultato:
+
+- `sio-backend-blue` e `sio-backend-green` sono entrambi attivi
+- entrambi risolvono `db`
+- il gateway punta a `backend-blue:3000`
+- l'API risponde con `service: UP` e `database: CONNECTED`
+
 ## Conclusione
 
 La Task 1 isola i frontend dal database. La Task 2 aggiunge due backend e
