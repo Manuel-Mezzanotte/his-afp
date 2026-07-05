@@ -220,10 +220,35 @@ torna a Blue, quel dato rimane.
 Il rollback del backend non annulla le scritture già fatte. Per questo le due
 versioni devono restare compatibili con lo stesso schema dati.
 
+## Task 3 - Migrazioni database senza downtime
+
+La Task 3 aggiunge il problema del database alla situazione Blue/Green.
+
+Se Green richiede una modifica allo schema, Blue deve continuare a funzionare
+finché il gateway non sposta tutto il traffico. Per questo la migrazione non deve
+essere distruttiva.
+
+La regola che userei è: prima modifiche additive, poi eventuali pulizie solo
+quando Blue non serve più.
+
+Esempio corretto:
+
+```sql
+ALTER TABLE admissions ADD COLUMN note_interne TEXT;
+```
+
+Blue ignora la nuova colonna, mentre Green può iniziare a usarla.
+
+Eviterei invece di rinominare o eliminare colonne usate da Blue, oppure di
+aggiungere colonne `NOT NULL` senza default. Queste modifiche potrebbero rompere
+la versione stabile mentre è ancora in produzione.
+
 ## Conclusione
 
 La Task 1 isola i frontend dal database. La Task 2 aggiunge due backend e
 permette lo switch Blue/Green tramite gateway, senza cambiare URL al frontend.
+La Task 3 definisce come gestire modifiche al database senza rompere Blue mentre
+Green viene testato.
 
 Possibili miglioramenti futuri: healthcheck Docker, gestione migliore dei
 segreti, logging centralizzato e TLS sul gateway.
