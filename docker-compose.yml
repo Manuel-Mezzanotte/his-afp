@@ -28,9 +28,7 @@ services:
       - db
     restart: always
     networks:
-      backend-net:
-        aliases:
-          - sio-backend
+      - backend-net
 
   backend-green:
     build: ./backend
