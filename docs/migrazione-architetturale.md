@@ -1,32 +1,18 @@
-# Migrazione architetturale UF14 - Task 1
+# Migrazione architetturale UF14
 
-## Obiettivo
+## Task 1 - Isolamento rete
 
-L'obiettivo della Task 1 è isolare i frontend dal database. Prima tutti i
-container erano nella rete Docker di default, quindi un frontend poteva
-potenzialmente vedere il servizio `db`.
+### Obiettivo
 
-La nuova configurazione divide l'infrastruttura in due reti e usa il gateway
-come unico punto di passaggio.
+Separare i frontend dal database. Prima i container erano tutti nella rete
+Docker di default, quindi un frontend poteva potenzialmente vedere `db`.
 
-## Prima della modifica
+La nuova configurazione usa due reti e lascia il gateway come unico punto di
+passaggio.
 
-Servizi presenti:
+### Modifica fatta
 
-- `fe-prod`, `fe-test`, `fe-sio`
-- `backend`
-- `db`
-- `gateway`
-
-Problemi principali:
-
-- servizi nella stessa rete Docker
-- database raggiungibile direttamente dall'host con `5432:5432`
-- gateway non unico punto di controllo
-
-## Modifica fatta
-
-Nel file `docker-compose.yml` ho aggiunto due reti:
+Nel `docker-compose.yml` ho aggiunto:
 
 ```yaml
 networks:
@@ -41,7 +27,8 @@ Assegnazione finale:
 | `fe-prod` | `frontend-net` |
 | `fe-test` | `frontend-net` |
 | `fe-sio` | `frontend-net` |
-| `backend` | `backend-net` |
+| `backend-blue` | `backend-net` |
+| `backend-green` | `backend-net` |
 | `db` | `backend-net` |
 | `gateway` | `frontend-net` e `backend-net` |
 
@@ -50,10 +37,10 @@ Schema:
 ```text
 Browser -> gateway
               |-> frontend-net: fe-prod, fe-test, fe-sio
-              |-> backend-net: backend, db
+              |-> backend-net: backend-blue, backend-green, db
 ```
 
-Ho anche rimosso dal servizio `db`:
+Ho rimosso dal servizio `db`:
 
 ```yaml
 ports:
@@ -62,20 +49,18 @@ ports:
 
 Dopo la modifica solo `gateway` espone porte verso l'esterno.
 
-## Avvio
-
-Comando usato:
+### Avvio
 
 ```bash
 PROD_VERSION=prod TEST_VERSION=test SVI_VERSION=svi docker compose up -d --build
 ```
 
-Le tre variabili servono per dare tag diversi ai frontend ed evitare che
-costruiscano tutti `his-afp:latest`.
+Uso versioni diverse per evitare che i tre frontend costruiscano tutti
+`his-afp:latest`.
 
-## Test eseguiti
+### Test
 
-### Porte esposte
+Controllo porte:
 
 ```bash
 PROD_VERSION=prod TEST_VERSION=test SVI_VERSION=svi docker compose ps
@@ -88,7 +73,8 @@ sio-gateway    0.0.0.0:80->80/tcp, 0.0.0.0:8080->8080/tcp, 0.0.0.0:8999->8999/tc
 sio-postgres   5432/tcp
 ```
 
-`sio-postgres` mostra solo la porta interna Docker, non `0.0.0.0:5432`.
+`sio-postgres` non pubblica `0.0.0.0:5432`, quindi il database non è esposto
+direttamente.
 
 Verifica da host:
 
@@ -97,10 +83,9 @@ nc -zv 127.0.0.1 5432
 curl http://localhost:3000/health
 ```
 
-Risultato: entrambe le connessioni falliscono. Quindi database e backend non
-sono esposti direttamente.
+Risultato: entrambe le connessioni falliscono.
 
-### Frontend verso database
+Verifica frontend verso database:
 
 ```bash
 docker exec sio-fe-prod sh -c 'getent hosts db'
@@ -114,34 +99,16 @@ getent hosts db -> nessun output
 ping -c 1 db    -> ping: bad address 'db'
 ```
 
-Questo conferma che `fe-prod` non riesce a vedere il database.
-
-### Backend verso database
+Verifica backend verso database:
 
 ```bash
-docker exec sio-backend sh -c 'getent hosts db'
+docker exec sio-backend-blue sh -c 'getent hosts db'
+docker exec sio-backend-green sh -c 'getent hosts db'
 ```
 
-Risultato:
+Risultato: entrambi risolvono `db`, perché sono su `backend-net`.
 
-```text
-172.19.0.2        db  db
-```
-
-Questo è corretto: backend e database devono comunicare sulla rete
-`backend-net`.
-
-### Test tramite gateway
-
-Frontend:
-
-```text
-http://localhost
-http://localhost:8080
-http://localhost:8999
-```
-
-API:
+Test API tramite gateway:
 
 ```bash
 curl http://localhost/api/health
@@ -155,16 +122,108 @@ Risultato:
 {"status":"success","data":{"service":"UP","database":"CONNECTED"}}
 ```
 
+## Task 2 - Blue/Green backend
+
+### Obiettivo
+
+Avere due backend attivi:
+
+- `backend-blue`: versione stabile
+- `backend-green`: nuova versione da provare
+
+Il frontend continua a usare `/api/`. Lo switch viene gestito dal gateway.
+
+### Modifica fatta
+
+Nel `docker-compose.yml` il vecchio servizio `backend` è stato diviso in:
+
+- `backend-blue`, container `sio-backend-blue`
+- `backend-green`, container `sio-backend-green`
+
+Entrambi usano `./backend`, stanno su `backend-net`, usano lo stesso database e
+non espongono porte verso l'host.
+
+Nel gateway ho aggiunto:
+
+```nginx
+upstream api_backend {
+    server backend-blue:3000;
+}
+```
+
+Le tre location `/api/` puntano a:
+
+```nginx
+proxy_pass http://api_backend;
+```
+
+### Switch e rollback
+
+Per passare a Green:
+
+```nginx
+upstream api_backend {
+    server backend-green:3000;
+}
+```
+
+Poi ricarico NGINX:
+
+```bash
+docker exec sio-gateway nginx -s reload
+```
+
+Per il rollback si rimette:
+
+```nginx
+upstream api_backend {
+    server backend-blue:3000;
+}
+```
+
+e si ricarica di nuovo NGINX.
+
+### Test
+
+Ho verificato che siano attivi entrambi i backend:
+
+```text
+sio-backend-blue    3000/tcp
+sio-backend-green   3000/tcp
+```
+
+Test switch a Green:
+
+- gateway puntato a `backend-green:3000`
+- ricaricato NGINX
+- fermato temporaneamente `backend-blue`
+- `curl http://localhost/api/health` ha continuato a rispondere
+
+Test rollback a Blue:
+
+- gateway riportato a `backend-blue:3000`
+- ricaricato NGINX
+- fermato temporaneamente `backend-green`
+- `curl http://localhost/api/health` ha continuato a rispondere
+
+Risposta ottenuta:
+
+```json
+{"status":"success","data":{"service":"UP","database":"CONNECTED"}}
+```
+
+### Nota sul database
+
+Blue e Green condividono lo stesso database. Se Green scrive un dato e poi si
+torna a Blue, quel dato rimane.
+
+Il rollback del backend non annulla le scritture già fatte. Per questo le due
+versioni devono restare compatibili con lo stesso schema dati.
+
 ## Conclusione
 
-La Task 1 è completata perché:
-
-- frontend e database sono separati
-- `gateway` è l'unico ponte tra le reti
-- il database non espone più la porta `5432` verso l'host
-- i frontend non risolvono `db`
-- backend e database continuano a comunicare
-- frontend e API funzionano passando dal gateway
+La Task 1 isola i frontend dal database. La Task 2 aggiunge due backend e
+permette lo switch Blue/Green tramite gateway, senza cambiare URL al frontend.
 
 Possibili miglioramenti futuri: healthcheck Docker, gestione migliore dei
 segreti, logging centralizzato e TLS sul gateway.
