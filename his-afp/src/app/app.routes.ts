@@ -10,6 +10,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/accettazione-pz/accettazione-pz').then((m) => m.AccettazionePz),
   },
+  {
+    path: 'gestione-personale',
+    loadComponent: () =>
+      import('./features/gestione-personale/gestione-personale').then(
+        (m) => m.GestionePersonale,
+      ),
+  },
   // {
   //   path: 'modifica-pz',
   //   loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),
