@@ -3,6 +3,7 @@ import {
   AbstractControl,
   AsyncValidatorFn,
   FormBuilder,
+  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
@@ -14,7 +15,12 @@ import { Message } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { StaffManager } from '../../core/Staff/staff-manager';
-import { CreateStaffUser, StaffRole, staffRoleLabels } from '../../core/Staff/staff.model';
+import {
+  CreateStaffUser,
+  StaffRole,
+  StaffUser,
+  staffRoleLabels,
+} from '../../core/Staff/staff.model';
 
 type StaffFormControl = 'username' | 'password' | 'role';
 
@@ -25,9 +31,8 @@ interface RoleOption {
 
 @Component({
   selector: 'his-gestione-personale',
-  imports: [Button, InputText, Message, ReactiveFormsModule, SelectModule, TagModule],
+  imports: [Button, FormsModule, InputText, Message, ReactiveFormsModule, SelectModule, TagModule],
   templateUrl: './gestione-personale.html',
-  styleUrl: './gestione-personale.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GestionePersonale {
@@ -39,6 +44,9 @@ export class GestionePersonale {
     { label: staffRoleLabels.AMM, value: 'AMM' },
   ];
   readonly saveError = signal<string | null>(null);
+  readonly roleDrafts = signal<Record<number, StaffRole>>({});
+  readonly savingRoleId = signal<number | null>(null);
+  readonly roleSaveError = signal<string | null>(null);
 
   readonly #fb = inject(FormBuilder);
   readonly staffForm = this.#fb.nonNullable.group({
@@ -96,6 +104,45 @@ export class GestionePersonale {
       username: '',
       password: '',
       role: 'INF',
+    });
+  }
+
+  public selectedRole(user: StaffUser): StaffRole {
+    return this.roleDrafts()[user.id] ?? user.role;
+  }
+
+  public setSelectedRole(userId: number, role: StaffRole): void {
+    this.roleSaveError.set(null);
+    this.roleDrafts.update((drafts) => ({ ...drafts, [userId]: role }));
+  }
+
+  public roleChanged(user: StaffUser): boolean {
+    return this.selectedRole(user) !== user.role;
+  }
+
+  public saveRole(user: StaffUser): void {
+    const role = this.selectedRole(user);
+
+    if (role === user.role) {
+      return;
+    }
+
+    this.roleSaveError.set(null);
+    this.savingRoleId.set(user.id);
+
+    this.staffManager.updateRole(user.id, role).subscribe({
+      next: () => {
+        this.roleDrafts.update((drafts) => {
+          const nextDrafts = { ...drafts };
+          delete nextDrafts[user.id];
+          return nextDrafts;
+        });
+        this.savingRoleId.set(null);
+      },
+      error: () => {
+        this.roleSaveError.set('Errore durante la modifica del ruolo');
+        this.savingRoleId.set(null);
+      },
     });
   }
 

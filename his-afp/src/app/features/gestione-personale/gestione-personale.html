@@ -109,26 +109,48 @@
     }
   </form>
 
+  @if (roleSaveError()) {
+    <p-message severity="error" variant="simple">{{ roleSaveError() }}</p-message>
+  }
+
   <div class="overflow-x-auto">
     <table class="w-full min-w-xl border-collapse">
       <thead>
         <tr class="border-b border-surface-300 text-left">
           <th class="p-3">Username</th>
           <th class="p-3">Ruolo</th>
-          <th class="p-3">Codice</th>
           <th class="p-3">Stato</th>
+          <th class="p-3">Azioni</th>
         </tr>
       </thead>
       <tbody>
         @for (utente of staffManager.staff(); track utente.id) {
           <tr class="border-b border-surface-200">
             <td class="p-3 font-medium">{{ utente.username }}</td>
-            <td class="p-3">{{ roleLabels[utente.role] }}</td>
-            <td class="p-3">{{ utente.role }}</td>
+            <td class="p-3">
+              <p-select
+                (ngModelChange)="setSelectedRole(utente.id, $event)"
+                [ngModel]="selectedRole(utente)"
+                [options]="roleOptions"
+                class="w-64"
+                optionLabel="label"
+                optionValue="value"
+              />
+            </td>
             <td class="p-3">
               <p-tag
                 [severity]="utente.isActive ? 'success' : 'danger'"
                 [value]="utente.isActive ? 'Attivo' : 'Disattivo'"
+              />
+            </td>
+            <td class="p-3">
+              <p-button
+                (onClick)="saveRole(utente)"
+                [disabled]="!roleChanged(utente) || savingRoleId() !== null"
+                [loading]="savingRoleId() === utente.id"
+                icon="pi pi-save"
+                label="Salva ruolo"
+                size="small"
               />
             </td>
           </tr>
