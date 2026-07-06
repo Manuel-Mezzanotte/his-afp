@@ -17,15 +17,107 @@
     <p class="text-red-500">{{ staffManager.error() }}</p>
   }
 
+  <form
+    (ngSubmit)="onSubmit()"
+    [formGroup]="staffForm"
+    class="flex flex-row flex-wrap items-start gap-4 rounded-md border border-surface-200 p-4"
+  >
+    <div class="flex flex-col gap-1">
+      <label for="username">Username</label>
+      <input
+        [invalid]="fieldInvalid('username')"
+        class="w-64"
+        formControlName="username"
+        id="username"
+        pInputText
+        type="text"
+      />
+      @if (staffForm.controls.username.pending) {
+        <p-message severity="info" variant="simple">Controllo username...</p-message>
+      }
+      @if (fieldInvalid('username')) {
+        @if (fieldError('username', 'required')) {
+          <p-message severity="error" variant="simple">Username obbligatorio.</p-message>
+        }
+        @if (fieldError('username', 'minlength')) {
+          <p-message severity="error" variant="simple">Almeno 3 caratteri.</p-message>
+        }
+        @if (fieldError('username', 'usernameTaken')) {
+          <p-message severity="error" variant="simple">Username già presente.</p-message>
+        }
+        @if (fieldError('username', 'usernameCheckFailed')) {
+          <p-message severity="error" variant="simple">Controllo username non riuscito.</p-message>
+        }
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="password">Password</label>
+      <input
+        [invalid]="fieldInvalid('password')"
+        class="w-64"
+        formControlName="password"
+        id="password"
+        pInputText
+        type="password"
+      />
+      @if (fieldInvalid('password')) {
+        @if (fieldError('password', 'required')) {
+          <p-message severity="error" variant="simple">Password obbligatoria.</p-message>
+        }
+        @if (fieldError('password', 'minlength')) {
+          <p-message severity="error" variant="simple">Almeno 6 caratteri.</p-message>
+        }
+      }
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="role">Ruolo</label>
+      <p-select
+        [invalid]="fieldInvalid('role')"
+        [options]="roleOptions"
+        class="w-64"
+        formControlName="role"
+        id="role"
+        optionLabel="label"
+        optionValue="value"
+      />
+      @if (fieldInvalid('role') && fieldError('role', 'required')) {
+        <p-message severity="error" variant="simple">Ruolo obbligatorio.</p-message>
+      }
+    </div>
+
+    <div class="flex flex-row gap-2 pt-6">
+      <p-button
+        [disabled]="staffForm.invalid || staffForm.pending"
+        icon="pi pi-save"
+        label="Salva"
+        type="submit"
+      />
+      <p-button
+        (onClick)="resetForm()"
+        icon="pi pi-times"
+        label="Annulla"
+        severity="secondary"
+        type="button"
+        variant="outlined"
+      />
+    </div>
+
+    @if (saveError()) {
+      <p-message class="basis-full" severity="error" variant="simple">{{ saveError() }}</p-message>
+    }
+  </form>
+
   <div class="overflow-x-auto">
     <table class="w-full min-w-xl border-collapse">
       <thead>
-      <tr class="border-b border-surface-300 text-left">
-        <th class="p-3">Username</th>
-        <th class="p-3">Ruolo</th>
-        <th class="p-3">Codice</th>
-        <th class="p-3">Stato</th>
-      </tr>
+        <tr class="border-b border-surface-300 text-left">
+          <th class="p-3">Username</th>
+          <th class="p-3">Ruolo</th>
+          <th class="p-3">Codice</th>
+          <th class="p-3">Stato</th>
+        </tr>
       </thead>
       <tbody>
         @for (utente of staffManager.staff(); track utente.id) {
