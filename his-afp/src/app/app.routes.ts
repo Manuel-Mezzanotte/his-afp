@@ -11,6 +11,11 @@ export const routes: Routes = [
       import('./features/accettazione-pz/accettazione-pz').then((m) => m.AccettazionePz),
   },
   {
+    path: 'ricerca-paziente',
+    loadComponent: () =>
+      import('./features/ricerca-paziente/ricerca-paziente').then((m) => m.RicercaPaziente),
+  },
+  {
     path: 'gestione-personale',
     loadComponent: () =>
       import('./features/gestione-personale/gestione-personale').then(

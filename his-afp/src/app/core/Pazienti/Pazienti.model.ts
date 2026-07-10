@@ -60,3 +60,41 @@ export interface PatientAdmissionRes {
   id: number;
   braccialetto: string;
 }
+
+export interface PatientSearchResult {
+  id: number;
+  codiceFiscale: string;
+  nome: string;
+  cognome: string;
+  dataNascita: string;
+  sesso: string;
+  indirizzoVia: string | null;
+  indirizzoCivico: string | null;
+  comune: string | null;
+  provincia: string | null;
+}
+
+export interface PatientSearchResultDto {
+  id: number;
+  codice_fiscale: string;
+  nome: string;
+  cognome: string;
+  data_nascita: string;
+  sex: string;
+  indirizzo_via: string | null;
+  indirizzo_civico: string | null;
+  comune: string | null;
+  provincia: string | null;
+}
+
+export interface PatientSearchByFiscalCode {
+  cf: string;
+}
+
+export interface PatientSearchByPersonalData {
+  nome: string;
+  cognome: string;
+  dataNascita: string;
+}
+
+export type PatientSearch = PatientSearchByFiscalCode | PatientSearchByPersonalData;
