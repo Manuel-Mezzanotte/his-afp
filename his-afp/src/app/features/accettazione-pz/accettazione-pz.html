@@ -1,13 +1,13 @@
-<form (submit)="onSubmit()" [formGroup]="paziente">
+<form (ngSubmit)="onSubmit()" [formGroup]="paziente">
   <div class="flex flex-row flex-wrap gap-8">
     <p-fieldset formGroupName="anagrafica" legend="Dati anagrafici">
       <div class="flex flex-col p-4">
-        <label for="nome">Nome:</label>
+        <label for="accettazioneNome">Nome:</label>
         <input
           [invalid]="checkFormControl('anagrafica.nome')"
           class="w-2xs"
           formControlName="nome"
-          id="nome"
+          id="accettazioneNome"
           pInputText
           type="text"
         />
@@ -32,12 +32,12 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="cognome">Cognome:</label>
+        <label for="accettazioneCognome">Cognome:</label>
         <input
           [invalid]="checkFormControl('anagrafica.cognome')"
           class="w-2xs"
           formControlName="cognome"
-          id="cognome"
+          id="accettazioneCognome"
           pInputText
           type="text"
         />
@@ -62,14 +62,14 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="dataNascita">Data di nascita:</label>
+        <label for="accettazioneDataNascita">Data di nascita:</label>
         <p-datePicker
           [invalid]="checkFormControl('anagrafica.dataNascita')"
           [maxDate]="maxDate"
           class="w-2xs"
           dateFormat="dd/mm/yy"
           formControlName="dataNascita"
-          id="dataNascita"
+          id="accettazioneDataNascita"
           placeholder="dd/mm/yyyy"
         />
         @if (checkFormControl('anagrafica.dataNascita')) {
@@ -81,12 +81,12 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="codiceFiscale">Codice Fiscale:</label>
+        <label for="accettazioneCodiceFiscale">Codice Fiscale:</label>
         <input
           [invalid]="checkFormControl('anagrafica.codiceFiscale')"
           class="w-2xs"
           formControlName="codiceFiscale"
-          id="codiceFiscale"
+          id="accettazioneCodiceFiscale"
           pInputText
           type="text"
         />
@@ -104,13 +104,13 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="sesso">Sesso:</label>
+        <label for="accettazioneSesso">Sesso:</label>
         <p-select
           [invalid]="checkFormControl('anagrafica.sesso')"
           [options]="sexOption"
           class="w-2xs"
           formControlName="sesso"
-          id="sesso"
+          id="accettazioneSesso"
           optionLabel="desc"
           optionValue="code"
         />
@@ -125,7 +125,7 @@
     </p-fieldset>
     <p-fieldset formGroupName="sanitaria" legend="Dati sanitari">
       <div class="flex flex-col p-4">
-        <label for="patologia">Patologia:</label>
+        <label for="accettazionePatologia">Patologia:</label>
         <p-select
           [filterFields]="['code', 'description']"
           [filter]="true"
@@ -133,7 +133,7 @@
           [options]="gestioneRisorse.pathologies()"
           class="w-2xs"
           formControlName="patologia"
-          id="patologia"
+          id="accettazionePatologia"
           optionValue="code"
         >
           <ng-template #item let-pathology>
@@ -152,7 +152,7 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="modArrivo">Modalità di Arrivo:</label>
+        <label for="accettazioneModArrivo">Modalità di Arrivo:</label>
         <p-select
           [filterFields]="['code', 'description']"
           [filter]="true"
@@ -160,7 +160,7 @@
           [options]="gestioneRisorse.arrivalModes()"
           class="w-2xs"
           formControlName="modArrivo"
-          id="modArrivo"
+          id="accettazioneModArrivo"
           optionValue="code"
         >
           <ng-template #item let-modArrivo>
@@ -179,13 +179,13 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="codiceColore">Codice colore:</label>
+        <label for="accettazioneCodiceColore">Codice colore:</label>
         <p-select
           [invalid]="checkFormControl('sanitaria.codiceColore')"
           [options]="gestioneRisorse.triageColors()"
           class="w-2xs"
           formControlName="codiceColore"
-          id="codiceColore"
+          id="accettazioneCodiceColore"
           optionValue="code"
         >
           <ng-template #item let-color>
@@ -216,14 +216,14 @@
         }
       </div>
       <div class="flex flex-col p-4">
-        <label for="noteTriage">Note triage:</label>
+        <label for="accettazioneNoteTriage">Note triage:</label>
         <textarea
           [autoResize]="true"
           [invalid]="checkFormControl('sanitaria.noteTriage')"
           class="w-2xs"
           cols="30"
           formControlName="noteTriage"
-          id="noteTriage"
+          id="accettazioneNoteTriage"
           pTextarea
           rows="5"
         >

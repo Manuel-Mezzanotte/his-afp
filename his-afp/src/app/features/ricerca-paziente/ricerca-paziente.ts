@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { DatePicker } from 'primeng/datepicker';
@@ -21,6 +21,8 @@ export class RicercaPaziente {
   readonly searchMode = signal<SearchMode>('fiscalCode');
   readonly formError = signal<string | null>(null);
   readonly maxDate = new Date();
+  readonly patientSelected = output<void>();
+  readonly newPatientRequested = output<void>();
 
   readonly #fb = inject(FormBuilder);
   readonly searchForm = this.#fb.group({
@@ -73,6 +75,11 @@ export class RicercaPaziente {
 
   public selectPatient(patient: PatientSearchResult): void {
     this.patientManager.selectPatient(patient);
+    this.patientSelected.emit();
+  }
+
+  public createNewPatient(): void {
+    this.newPatientRequested.emit();
   }
 
   private formatDate(date: Date): string {

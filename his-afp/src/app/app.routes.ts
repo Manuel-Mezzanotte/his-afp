@@ -8,7 +8,9 @@ export const routes: Routes = [
   {
     path: 'accettazione-pz',
     loadComponent: () =>
-      import('./features/accettazione-pz/accettazione-pz').then((m) => m.AccettazionePz),
+      import('./features/workflow-accettazione/workflow-accettazione').then(
+        (m) => m.WorkflowAccettazione,
+      ),
   },
   {
     path: 'ricerca-paziente',

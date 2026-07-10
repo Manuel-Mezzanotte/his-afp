@@ -48,12 +48,14 @@ export interface PatientAdmission {
     modArrivo: string;
     noteTriage: string;
   };
-  residenza: {
-    via: string;
-    civico: string;
-    comune: string;
-    provincia: string;
-  };
+  residenza?: PatientResidence;
+}
+
+export interface PatientResidence {
+  via: string;
+  civico: string;
+  comune: string;
+  provincia: string;
 }
 
 export interface PatientAdmissionRes {

@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import {
   PatientAdmission,
   PatientAdmissionRes,
+  PatientResidence,
   PatientSearch,
   PatientSearchResult,
   PatientSearchResultDto,
@@ -10,7 +11,6 @@ import {
 } from './Pazienti.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { APIResponse } from '../models/APIResponse.model';
-import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -106,7 +106,7 @@ export class PatientManager {
 
   public admitPatient(pz: PatientAdmission) {
     this.#http
-      .post<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/admissions`, pz)
+      .post<APIResponse<PatientAdmissionRes>>('/api/admissions', pz)
       .subscribe({
         next: (res) => {
           this.#router.navigate([`/modifica-pz/${res.data.id}`]);
@@ -117,9 +117,9 @@ export class PatientManager {
       });
   }
 
-  public updatePatientInfo(pzId: number, residenza: Pick<PatientAdmission, 'residenza'>) {
+  public updatePatientInfo(pzId: number, residenza: PatientResidence) {
     this.#http
-      .patch<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/patients/${pzId}`, residenza)
+      .patch<APIResponse<PatientAdmissionRes>>(`/api/patients/${pzId}`, residenza)
       .subscribe({
         next: (res) => {
           this.#router.navigate([`/lista-pz`]);
