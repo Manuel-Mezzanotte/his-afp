@@ -24,6 +24,11 @@ export const routes: Routes = [
         (m) => m.GestionePersonale,
       ),
   },
+  {
+    path: 'report',
+    loadComponent: () =>
+      import('./features/report-dimessi/report-dimessi').then((m) => m.ReportDimessi),
+  },
   // {
   //   path: 'modifica-pz',
   //   loadComponent: () => import('./features/modifica-pz/modifica-pz').then((m) => m.ModificaPz),

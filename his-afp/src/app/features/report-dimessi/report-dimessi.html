@@ -1,0 +1,37 @@
+<section class="flex flex-col gap-4">
+  <div>
+    <h1 class="text-3xl font-bold text-primary">Report dimessi</h1>
+    <p>Pazienti dimessi nelle ultime 24 ore: {{ reportManager.dischargedAdmissions().length }}</p>
+  </div>
+
+  @if (reportManager.loading()) {
+    <p>Caricamento...</p>
+  } @else if (reportManager.error()) {
+    <p class="text-red-500">{{ reportManager.error() }}</p>
+  } @else {
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-xl border-collapse">
+        <thead>
+          <tr class="border-b border-surface-300 text-left">
+            <th class="p-3">Braccialetto</th>
+            <th class="p-3">Paziente</th>
+            <th class="p-3">Data e ora di dimissione</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (admission of reportManager.dischargedAdmissions(); track admission.braccialetto) {
+            <tr class="border-b border-surface-200">
+              <td class="p-3 font-medium">{{ admission.braccialetto }}</td>
+              <td class="p-3">{{ admission.nome }} {{ admission.cognome }}</td>
+              <td class="p-3">{{ admission.dataOraDimissione | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="p-3" colspan="3">Nessun paziente dimesso nelle ultime 24 ore.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
