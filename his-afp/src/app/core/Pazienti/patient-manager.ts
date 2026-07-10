@@ -27,12 +27,16 @@ export class PatientManager {
   #searchError = signal<string | null>(null);
   #searchPerformed = signal<boolean>(false);
   #selectedPatient = signal<PatientSearchResult | null>(null);
+  #admissionLoading = signal<boolean>(false);
+  #admissionError = signal<string | null>(null);
   listaPZ = this.#listaPZFiltered.asReadonly();
   searchResults = this.#searchResults.asReadonly();
   searchLoading = this.#searchLoading.asReadonly();
   searchError = this.#searchError.asReadonly();
   searchPerformed = this.#searchPerformed.asReadonly();
   selectedPatient = this.#selectedPatient.asReadonly();
+  admissionLoading = this.#admissionLoading.asReadonly();
+  admissionError = this.#admissionError.asReadonly();
 
   // constructor() {
   //   this.fetchPazienti();
@@ -104,15 +108,20 @@ export class PatientManager {
     this.#selectedPatient.set(null);
   }
 
-  public admitPatient(pz: PatientAdmission) {
+  public admitPatient(pz: PatientAdmission): void {
+    this.#admissionLoading.set(true);
+    this.#admissionError.set(null);
+
     this.#http
       .post<APIResponse<PatientAdmissionRes>>('/api/admissions', pz)
       .subscribe({
         next: (res) => {
+          this.#admissionLoading.set(false);
           this.#router.navigate([`/modifica-pz/${res.data.id}`]);
         },
-        error: (err) => {
-          console.error("Errore durante l'ammissione del paziente:", err);
+        error: () => {
+          this.#admissionError.set("Errore durante l'invio dell'accettazione");
+          this.#admissionLoading.set(false);
         },
       });
   }

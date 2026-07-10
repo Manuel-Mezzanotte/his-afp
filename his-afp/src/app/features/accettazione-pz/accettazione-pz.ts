@@ -71,13 +71,7 @@ export class AccettazionePz {
       const patient = this.selectedPatient();
 
       if (patient) {
-        this.paziente.controls.anagrafica.patchValue({
-          nome: patient.nome,
-          cognome: patient.cognome,
-          dataNascita: new Date(patient.dataNascita),
-          codiceFiscale: patient.codiceFiscale,
-          sesso: patient.sesso,
-        });
+        this.patchPatientData(patient);
       } else if (this.newPatient()) {
         this.paziente.controls.anagrafica.reset({
           nome: '',
@@ -133,6 +127,25 @@ export class AccettazionePz {
     } else {
       this.paziente.markAllAsTouched();
     }
+  }
+
+  public resetForm(): void {
+    this.paziente.reset();
+
+    const patient = this.selectedPatient();
+    if (patient) {
+      this.patchPatientData(patient);
+    }
+  }
+
+  private patchPatientData(patient: PatientSearchResult): void {
+    this.paziente.controls.anagrafica.patchValue({
+      nome: patient.nome,
+      cognome: patient.cognome,
+      dataNascita: new Date(patient.dataNascita),
+      codiceFiscale: patient.codiceFiscale,
+      sesso: patient.sesso,
+    });
   }
 
   private formatDate(date: Date): string {
