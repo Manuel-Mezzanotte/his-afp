@@ -1,18 +1,18 @@
 <header
-  class="flex flex-row items-center shadow-md backdrop-opacity-5"
+  class="flex flex-col items-start gap-2 p-2 shadow-md backdrop-opacity-5 md:flex-row md:items-center"
 >
   <!-- LOGO -->
   <div
-    class="flex items-center justify-center p-1"
+    class="flex items-center justify-center"
   >
-    <img alt="logoASUIT" class="w-40" src="logo-asuit.svg">
+    <img alt="logoASUIT" class="w-28 md:w-40" src="logo-asuit.svg">
   </div>
   <!-- AZIENDA: Località + Reparto -->
   <div
     class="pl-1"
   >
-    <h1 class="text-4xl font-bold text-primary">{{ reparto }}</h1>
-    <p class="text-md text-primary">
+    <h1 class="text-2xl font-bold text-primary md:text-4xl">{{ reparto }}</h1>
+    <p class="text-sm text-primary md:text-md">
       {{ struttura }} -
       @switch (type) {
         @case ('PROD') {
@@ -32,11 +32,11 @@
   </div>
 
   <!--  DIVIDER-->
-  <p-divider layout="vertical"/>
+  <p-divider class="hidden md:block" layout="vertical"/>
   <!--  <div class="border-amber-600 border-2 h-15 mx-1"></div>-->
   <!-- AZIONI -->
   <nav
-    class="flex flex-row items-center gap-3 pl-4"
+    class="flex flex-row flex-wrap items-center gap-2 pl-0 md:gap-3 md:pl-4"
   >
     <p-button
       label="Lista PZ"
@@ -46,6 +46,16 @@
     <p-button
       label="Accettazione PZ"
       routerLink="/accettazione-pz"
+      variant="outlined"
+    />
+    <p-button
+      label="Personale"
+      routerLink="/gestione-personale"
+      variant="outlined"
+    />
+    <p-button
+      label="Report"
+      routerLink="/report"
       variant="outlined"
     />
     <p-button

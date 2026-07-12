@@ -1,8 +1,16 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { PatientAdmission, PatientAdmissionRes, Paziente, PazienteDTO } from './Pazienti.model';
-import { HttpClient } from '@angular/common/http';
+import {
+  PatientAdmission,
+  PatientAdmissionRes,
+  PatientResidence,
+  PatientSearch,
+  PatientSearchResult,
+  PatientSearchResultDto,
+  Paziente,
+  PazienteDTO,
+} from './Pazienti.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { APIResponse } from '../models/APIResponse.model';
-import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -14,7 +22,21 @@ export class PatientManager {
   readonly #router = inject(Router);
   #listaPZ = signal<Paziente[]>([]);
   #listaPZFiltered = signal<Paziente[]>(this.#listaPZ());
+  #searchResults = signal<PatientSearchResult[]>([]);
+  #searchLoading = signal<boolean>(false);
+  #searchError = signal<string | null>(null);
+  #searchPerformed = signal<boolean>(false);
+  #selectedPatient = signal<PatientSearchResult | null>(null);
+  #admissionLoading = signal<boolean>(false);
+  #admissionError = signal<string | null>(null);
   listaPZ = this.#listaPZFiltered.asReadonly();
+  searchResults = this.#searchResults.asReadonly();
+  searchLoading = this.#searchLoading.asReadonly();
+  searchError = this.#searchError.asReadonly();
+  searchPerformed = this.#searchPerformed.asReadonly();
+  selectedPatient = this.#selectedPatient.asReadonly();
+  admissionLoading = this.#admissionLoading.asReadonly();
+  admissionError = this.#admissionError.asReadonly();
 
   // constructor() {
   //   this.fetchPazienti();
@@ -46,22 +68,67 @@ export class PatientManager {
     });
   }
 
-  public admitPatient(pz: PatientAdmission) {
+  public searchPatients(search: PatientSearch): void {
+    this.#searchLoading.set(true);
+    this.#searchError.set(null);
+    this.#searchPerformed.set(true);
+    this.#searchResults.set([]);
+    this.#selectedPatient.set(null);
+
+    const params =
+      'cf' in search
+        ? new HttpParams().set('cf', search.cf)
+        : new HttpParams()
+            .set('nome', search.nome)
+            .set('cognome', search.cognome)
+            .set('data_nascita', search.dataNascita);
+
     this.#http
-      .post<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/admissions`, pz)
+      .get<APIResponse<PatientSearchResultDto[]>>('/api/patients/search', { params })
       .subscribe({
         next: (res) => {
-          this.#router.navigate([`/modifica-pz/${res.data.id}`]);
+          this.#searchResults.set(res.data.map((patient) => this.mapSearchResult(patient)));
+          this.#searchLoading.set(false);
         },
-        error: (err) => {
-          console.error("Errore durante l'ammissione del paziente:", err);
+        error: () => {
+          this.#searchError.set('Errore durante la ricerca del paziente');
+          this.#searchLoading.set(false);
         },
       });
   }
 
-  public updatePatientInfo(pzId: number, residenza: Pick<PatientAdmission, 'residenza'>) {
+  public selectPatient(patient: PatientSearchResult): void {
+    this.#selectedPatient.set(patient);
+  }
+
+  public clearSearch(): void {
+    this.#searchResults.set([]);
+    this.#searchError.set(null);
+    this.#searchPerformed.set(false);
+    this.#selectedPatient.set(null);
+  }
+
+  public admitPatient(pz: PatientAdmission): void {
+    this.#admissionLoading.set(true);
+    this.#admissionError.set(null);
+
     this.#http
-      .patch<APIResponse<PatientAdmissionRes>>(`${environment.apiUrl}/patients/${pzId}`, residenza)
+      .post<APIResponse<PatientAdmissionRes>>('/api/admissions', pz)
+      .subscribe({
+        next: (res) => {
+          this.#admissionLoading.set(false);
+          this.#router.navigate([`/modifica-pz/${res.data.id}`]);
+        },
+        error: () => {
+          this.#admissionError.set("Errore durante l'invio dell'accettazione");
+          this.#admissionLoading.set(false);
+        },
+      });
+  }
+
+  public updatePatientInfo(pzId: number, residenza: PatientResidence) {
+    this.#http
+      .patch<APIResponse<PatientAdmissionRes>>(`/api/patients/${pzId}`, residenza)
       .subscribe({
         next: (res) => {
           this.#router.navigate([`/lista-pz`]);
@@ -104,5 +171,20 @@ export class PatientManager {
       return fullName.includes(name.toLowerCase());
     });
     this.#listaPZFiltered.set(filtered);
+  }
+
+  private mapSearchResult(patient: PatientSearchResultDto): PatientSearchResult {
+    return {
+      id: patient.id,
+      codiceFiscale: patient.codice_fiscale,
+      nome: patient.nome,
+      cognome: patient.cognome,
+      dataNascita: patient.data_nascita,
+      sesso: patient.sex,
+      indirizzoVia: patient.indirizzo_via,
+      indirizzoCivico: patient.indirizzo_civico,
+      comune: patient.comune,
+      provincia: patient.provincia,
+    };
   }
 }

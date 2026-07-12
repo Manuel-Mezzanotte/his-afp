@@ -8,7 +8,26 @@ export const routes: Routes = [
   {
     path: 'accettazione-pz',
     loadComponent: () =>
-      import('./features/accettazione-pz/accettazione-pz').then((m) => m.AccettazionePz),
+      import('./features/workflow-accettazione/workflow-accettazione').then(
+        (m) => m.WorkflowAccettazione,
+      ),
+  },
+  {
+    path: 'ricerca-paziente',
+    loadComponent: () =>
+      import('./features/ricerca-paziente/ricerca-paziente').then((m) => m.RicercaPaziente),
+  },
+  {
+    path: 'gestione-personale',
+    loadComponent: () =>
+      import('./features/gestione-personale/gestione-personale').then(
+        (m) => m.GestionePersonale,
+      ),
+  },
+  {
+    path: 'report',
+    loadComponent: () =>
+      import('./features/report-dimessi/report-dimessi').then((m) => m.ReportDimessi),
   },
   // {
   //   path: 'modifica-pz',

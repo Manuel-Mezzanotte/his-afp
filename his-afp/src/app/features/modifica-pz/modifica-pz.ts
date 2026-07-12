@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, untracked } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { PatientAdmission, PazienteDTO } from '../../core/Pazienti/Pazienti.model';
+import { PatientResidence, PazienteDTO } from '../../core/Pazienti/Pazienti.model';
 import { APIResponse } from '../../core/models/APIResponse.model';
 import { Button } from 'primeng/button';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -137,7 +137,7 @@ export class ModificaPz {
       console.log(this.paziente.value);
       this.patientManager.updatePatientInfo(
         Number(this.patientId()) || -1,
-        this.paziente.value.residenza as Pick<PatientAdmission, 'residenza'>,
+        this.paziente.value.residenza as PatientResidence,
       );
     } else {
       this.paziente.markAllAsTouched();
