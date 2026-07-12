@@ -8,15 +8,31 @@ services:
       POSTGRES_USER: sio_user
       POSTGRES_PASSWORD: sio_password
       POSTGRES_DB: sio_db
-    ports:
-      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend-net
 
-  backend:
+  backend-blue:
     build: ./backend
-    container_name: sio-backend
+    container_name: sio-backend-blue
+    environment:
+      DB_HOST: db
+      DB_USER: sio_user
+      DB_PASS: sio_password
+      DB_NAME: sio_db
+      JWT_SECRET: "chiave_segreta_super_sicura_per_il_corso_segretissimissima"
+      AUTH_ENABLED: "false"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - backend-net
+
+  backend-green:
+    build: ./backend
+    container_name: sio-backend-green
     #    ports:
     #      - "3000:3000"
     environment:
@@ -29,6 +45,8 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - backend-net
 
   fe-sio:
     build:
@@ -39,6 +57,8 @@ services:
     environment:
       APP_ENV: "SVI"
       APP_VERSION: "${SVI_VERSION}"
+    networks:
+      - frontend-net
 
   # AMBIENTE PRODUZIONE (BLUE)
   fe-prod:
@@ -50,6 +70,8 @@ services:
     environment:
       APP_ENV: "PROD"
       APP_VERSION: "${PROD_VERSION}"
+    networks:
+      - frontend-net
 
   fe-test:
     build:
@@ -60,6 +82,8 @@ services:
     environment:
       APP_ENV: "TEST"
       APP_VERSION: "${TEST_VERSION}"
+    networks:
+      - frontend-net
 
   gateway:
     image: nginx:alpine
@@ -68,13 +92,24 @@ services:
       - "80:80"
       - "8080:8080"
       - "8999:8999"
+      - "5432:5432"
     volumes:
-      - ./gateway:/etc/nginx/conf.d/:ro
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - fe-sio
       - fe-prod
       - fe-test
+      - backend-blue
+      - backend-green
     restart: always
+    networks:
+      - frontend-net
+      - backend-net
 
 volumes:
   pg_data:
+
+networks:
+  frontend-net:
+  backend-net:
