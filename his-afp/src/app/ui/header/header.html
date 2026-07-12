@@ -1,12 +1,20 @@
 <header class="app-header">
-  <div class="header-inner">
-  <!-- LOGO -->
-  <div class="brand-block">
-    <img alt="logoASUIT" class="brand-logo" src="logo-asuit.svg">
-    <div class="brand-copy">
-      <h1>{{ reparto }}</h1>
-      <div class="facility-row">
-        <span>{{ struttura }}</span>
+  <div class="identity-strip">
+    <div class="header-inner">
+      <!-- LOGO -->
+      <div class="brand-block">
+        <img alt="logoASUIT" class="brand-logo" src="logo-asuit.svg">
+        <!--  DIVIDER-->
+        <span class="brand-divider"></span>
+        <!--  <div class="border-amber-600 border-2 h-15 mx-1"></div>-->
+        <div class="brand-copy">
+          <span class="department-label">Emergenza e urgenza</span>
+          <h1>{{ reparto }}</h1>
+          <span class="facility-name">{{ struttura }}</span>
+        </div>
+      </div>
+
+      <div class="header-tools">
         @switch (type) {
           @case ('PROD') {
             <p-tag severity="info" value="v{{version}} - {{type}}"/>
@@ -21,15 +29,17 @@
             <p-tag severity="secondary" value="v{{version}} - {{type}}"/>
           }
         }
+        <span class="tools-divider"></span>
+        <div class="theme-control">
+          <his-darckmode-selector/>
+        </div>
       </div>
     </div>
   </div>
 
-  <!--  DIVIDER-->
-  <p-divider class="header-divider" layout="vertical"/>
-  <!--  <div class="border-amber-600 border-2 h-15 mx-1"></div>-->
   <!-- AZIONI -->
-  <nav class="main-nav">
+  <nav class="main-nav" aria-label="Navigazione principale">
+    <div class="nav-inner">
     <p-button
       icon="pi pi-users"
       label="Lista PZ"
@@ -66,10 +76,6 @@
       routerLinkActive="nav-active"
       text
     />
+    </div>
   </nav>
-
-  <div class="theme-control">
-    <his-darckmode-selector/>
-  </div>
-  </div>
 </header>
