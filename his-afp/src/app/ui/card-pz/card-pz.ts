@@ -19,21 +19,21 @@ export class CardPz {
   }
 
   setBorder() {
-    return this.borderTop() ? 'border-t-8' : 'border-b-8';
+    return this.borderTop() ? 'triage-border-top' : 'triage-border-bottom';
   }
 
   setColoreDiStato() {
     switch (this.paziente().codiceColore) {
       case 'ROSSO':
-        return 'border-red-600';
+        return 'triage-red';
       case 'ARANCIONE':
-        return 'border-orange-400';
+        return 'triage-orange';
       case 'AZZURRO':
-        return 'border-blue-600';
+        return 'triage-blue';
       case 'VERDE':
-        return 'border-green-600';
+        return 'triage-green';
       case 'BIANCO':
-        return 'border-gray-600';
+        return 'triage-white';
       default:
         return '';
     }
