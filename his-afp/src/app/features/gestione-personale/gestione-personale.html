@@ -1,8 +1,8 @@
-<section class="flex flex-col gap-4">
-  <div class="flex flex-row flex-wrap items-center justify-between gap-3">
+<section class="page">
+  <div class="page-header">
     <div>
-      <h1 class="text-3xl font-bold text-primary">Gestione personale</h1>
-      <p>Personale registrato: {{ staffManager.staff().length }}</p>
+      <h1 class="page-title">Gestione personale</h1>
+      <p class="page-subtitle">{{ staffManager.staff().length }} operatori registrati</p>
     </div>
     <p-button
       (onClick)="staffManager.fetchStaff()"
@@ -20,7 +20,7 @@
   <form
     (ngSubmit)="onSubmit()"
     [formGroup]="staffForm"
-    class="flex flex-row flex-wrap items-start gap-4 rounded-md border border-surface-200 p-4"
+    class="panel form-panel flex flex-row flex-wrap items-start gap-4"
   >
     <div class="flex flex-col gap-1">
       <label for="username">Username</label>
@@ -113,10 +113,11 @@
     <p-message severity="error" variant="simple">{{ roleSaveError() }}</p-message>
   }
 
-  <div class="overflow-x-auto">
-    <table class="w-full min-w-xl border-collapse">
+  <div class="panel table-panel">
+    <div class="overflow-x-auto">
+    <table class="app-table">
       <thead>
-        <tr class="border-b border-surface-300 text-left">
+          <tr>
           <th class="p-3">Username</th>
           <th class="p-3">Ruolo</th>
           <th class="p-3">Stato</th>
@@ -125,7 +126,7 @@
       </thead>
       <tbody>
         @for (utente of staffManager.staff(); track utente.id) {
-          <tr class="border-b border-surface-200">
+          <tr>
             <td class="p-3 font-medium">{{ utente.username }}</td>
             <td class="p-3">
               <p-select
@@ -156,10 +157,11 @@
           </tr>
         } @empty {
           <tr>
-            <td class="p-3" colspan="4">Nessun utente trovato.</td>
+            <td class="empty-state" colspan="4">Nessun utente trovato.</td>
           </tr>
         }
       </tbody>
     </table>
+    </div>
   </div>
 </section>

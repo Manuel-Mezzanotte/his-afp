@@ -1,12 +1,11 @@
 import { Component, inject, input } from '@angular/core';
-import { CardModule } from 'primeng/card';
 import { Button } from 'primeng/button';
 import { Paziente } from '../../core/Pazienti/Pazienti.model';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'his-card-pz',
-  imports: [CardModule, Button],
+  imports: [Button],
   templateUrl: './card-pz.html',
   styleUrl: './card-pz.scss',
 })

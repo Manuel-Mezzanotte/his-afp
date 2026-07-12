@@ -1,35 +1,57 @@
-<p-button
-  (onClick)="PatientManager.fetchPazienti()"
-  [rounded]="true"
-  [text]="true"
-  icon="pi pi-refresh"
-  severity="secondary"
-/>
-<p-button
-  (onClick)="PatientManager.stopRefreshPazienti()"
-  [rounded]="true"
-  [text]="true"
-  icon="pi pi-stop"
-  severity="warn"
-/>
-<p-toggle-switch
-  [(ngModel)]="enableRefreshPz"
-/>
-<p>{{ enableRefreshPz() }}</p>
-<input
-  [(ngModel)]="nomePaziente"
-  pInputText
-  type="text"
->
+<div class="patient-toolbar panel">
+  <label class="search-field" for="patientSearch">
+    <span class="field-label">Cerca per nome</span>
+    <span class="search-input">
+      <i class="pi pi-search"></i>
+      <input
+        [(ngModel)]="nomePaziente"
+        id="patientSearch"
+        pInputText
+        placeholder="Nome del paziente"
+        type="text"
+      >
+    </span>
+  </label>
+  <div class="toolbar-side">
+    <label class="refresh-control">
+      <p-toggle-switch [(ngModel)]="enableRefreshPz"/>
+      <span>
+        <strong>Aggiornamento automatico</strong>
+        <small>{{ enableRefreshPz() ? 'Attivo' : 'Disattivo' }}</small>
+      </span>
+    </label>
+    <div class="toolbar-actions">
+      <p-button
+        (onClick)="PatientManager.fetchPazienti()"
+        icon="pi pi-refresh"
+        label="Aggiorna"
+        severity="secondary"
+        variant="outlined"
+      />
+      <p-button
+        (onClick)="PatientManager.stopRefreshPazienti()"
+        icon="pi pi-stop"
+        label="Interrompi"
+        severity="secondary"
+        variant="outlined"
+      />
+    </div>
+  </div>
+</div>
 
-<p>Pazienti presenti in PS: {{ PatientManager.listaPZ().length }}</p>
+<div class="patient-count">
+  <span>{{ PatientManager.listaPZ().length }}</span>
+  pazienti presenti
+</div>
 
-<div
-  class="flex flex-wrap flex-row gap-4 p-4"
->
+<div class="patient-grid">
   @for (paziente of PatientManager.listaPZ(); track paziente.braccialetto) {
     <his-card-pz [borderTop]="false" [paziente]="paziente"/>
   } @empty {
-    <h1>Nessun paziente in attesa</h1>
+    <div class="panel patient-empty">
+      <i class="pi pi-users"></i>
+      <h2>Nessun paziente in attesa</h2>
+      <p>Non risultano pazienti presenti in pronto soccorso.</p>
+    </div>
   }
 </div>

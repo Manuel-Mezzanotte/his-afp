@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.patient-card {
+  display: flex;
+  height: 100%;
+  min-height: 230px;
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid var(--app-border);
+  border-bottom-width: 5px;
+  border-radius: 8px;
+  background: var(--app-surface);
+  box-shadow: 0 5px 18px rgba(28, 54, 50, 0.05);
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.patient-card:hover {
+  box-shadow: var(--app-shadow);
+  transform: translateY(-2px);
+}
+
+.patient-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.8rem;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.patient-card-head h2 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.bracelet {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--app-muted);
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.triage-code {
+  padding: 0.28rem 0.48rem;
+  border: 1px solid var(--app-border);
+  border-radius: 4px;
+  background: var(--app-surface-soft);
+  color: var(--app-text);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.patient-card-body {
+  flex: 1 1 auto;
+  padding: 0.9rem 1rem;
+}
+
+.pathology {
+  color: var(--app-accent-strong);
+  font-size: 0.76rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.patient-card-body p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0.55rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.patient-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 1rem 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-card {
+    transition: none;
+  }
+}

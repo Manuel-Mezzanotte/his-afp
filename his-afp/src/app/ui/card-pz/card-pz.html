@@ -1,20 +1,21 @@
-<div class="mb-4 p-4">
-  <p-card
-    class="w-2xs {{setBorder()}} {{setColoreDiStato()}}"
-    header="{{paziente().cognome}} {{paziente().nome}}"
-    subheader="{{paziente().braccialetto}} - {{paziente().codiceColore}}"
-  >
-    <p>
-      <b>{{ paziente().patologia }}</b>
-      <br>
-      Note Triage: {{ paziente().note }}
-    </p>
-
-    <ng-template #footer>
-      <p-button
-        (onClick)="navigateToSchedaPaziente()"
-        label="Modifica"
-      />
-    </ng-template>
-  </p-card>
-</div>
+<article class="patient-card {{setBorder()}} {{setColoreDiStato()}}">
+  <div class="patient-card-head">
+    <div>
+      <h2>{{ paziente().cognome }} {{ paziente().nome }}</h2>
+      <span class="bracelet">{{ paziente().braccialetto }}</span>
+    </div>
+    <span class="triage-code">{{ paziente().codiceColore }}</span>
+  </div>
+  <div class="patient-card-body">
+    <span class="pathology">{{ paziente().patologia }}</span>
+    <p>{{ paziente().note }}</p>
+  </div>
+  <div class="patient-card-footer">
+    <p-button
+      (onClick)="navigateToSchedaPaziente()"
+      icon="pi pi-file-edit"
+      label="Apri scheda"
+      size="small"
+    />
+  </div>
+</article>

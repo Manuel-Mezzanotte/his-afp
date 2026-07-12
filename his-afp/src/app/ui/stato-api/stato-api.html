@@ -2,29 +2,47 @@
 @let db = systemStatus.statoAPI().database;
 @let uptime = systemStatus.statoAPI().uptime;
 
-<ul>
-  <li>Service:
+<div class="status-grid">
+  <article class="panel status-item">
+    <i class="pi pi-server"></i>
+    <div>
+      <span>Backend API</span>
+      <strong>Servizio applicativo</strong>
+    </div>
     <p-tag
       [severity]="srv === 'UP' ? 'success' : 'danger'"
       value="{{ srv }}"
     />
-  </li>
-  <li>Database:
+  </article>
+  <article class="panel status-item">
+    <i class="pi pi-database"></i>
+    <div>
+      <span>Database</span>
+      <strong>PostgreSQL</strong>
+    </div>
     <p-tag
       [severity]="db === 'CONNECTED' ? 'success' : 'danger'"
       value="{{ db }}"
     />
-  </li>
-  <li>Uptime:
+  </article>
+  <article class="panel status-item">
+    <i class="pi pi-clock"></i>
+    <div>
+      <span>Tempo di attività</span>
+      <strong>{{ uptime | number: '1.0-0' }} secondi</strong>
+    </div>
     <p-tag
       [severity]="uptime > 0 ? 'success' : 'danger'"
-      value="{{ uptime }}"
+      [value]="uptime > 0 ? 'ATTIVO' : 'NON DISPONIBILE'"
     />
-  </li>
-  <li>
-    <p-button
-      (onClick)="systemStatus.fetchStatoAPI()"
-      label="Refresh"
-    />
-  </li>
-</ul>
+  </article>
+</div>
+
+<div class="status-actions">
+  <p-button
+    (onClick)="systemStatus.fetchStatoAPI()"
+    icon="pi pi-refresh"
+    label="Aggiorna stato"
+    variant="outlined"
+  />
+</div>

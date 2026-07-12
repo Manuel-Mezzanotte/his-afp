@@ -1,12 +1,12 @@
-<section class="flex flex-col gap-8">
+<section class="acceptance-workflow">
   <his-ricerca-paziente
     (newPatientRequested)="onNewPatientRequested()"
     (patientSelected)="onPatientSelected()"
   />
 
   @if (showForm()) {
-    <section class="border-t border-surface-200 pt-6">
-      <h2 class="mb-4 text-2xl font-bold text-primary">Dati di accettazione</h2>
+    <section class="acceptance-details">
+      <h2>Dati di accettazione</h2>
       <his-accettazione-pz
         [newPatient]="newPatient()"
         [selectedPatient]="patientManager.selectedPatient()"

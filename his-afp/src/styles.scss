@@ -7,3 +7,237 @@
 //     margin: 0;
 //     background-color: #f8f9fa;
 // }
+
+:root {
+  --app-bg: #f4f7f7;
+  --app-surface: #ffffff;
+  --app-surface-soft: #eef4f3;
+  --app-border: #d9e3e1;
+  --app-text: #172321;
+  --app-muted: #60706d;
+  --app-accent: #087f75;
+  --app-accent-strong: #05645d;
+  --app-brand: #a5214b;
+  --app-shadow: 0 12px 32px rgba(28, 54, 50, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--app-bg);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  letter-spacing: 0;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-title {
+  margin: 0;
+  color: var(--app-text);
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.page-subtitle {
+  margin: 0.4rem 0 0;
+  color: var(--app-muted);
+  font-size: 0.95rem;
+}
+
+.panel {
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  background: var(--app-surface);
+  box-shadow: 0 5px 18px rgba(28, 54, 50, 0.04);
+}
+
+.form-panel {
+  padding: 1.15rem;
+}
+
+.field-label,
+.form-panel label {
+  color: #31413e;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.table-panel {
+  overflow: hidden;
+}
+
+.table-panel > .overflow-x-auto {
+  overflow-x: auto;
+}
+
+.app-table {
+  width: 100%;
+  min-width: 42rem;
+  border-collapse: collapse;
+}
+
+.app-table thead {
+  background: var(--app-surface-soft);
+}
+
+.app-table th {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--app-border);
+  color: #40514e;
+  font-size: 0.76rem;
+  font-weight: 750;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.app-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e7edec;
+  vertical-align: middle;
+}
+
+.app-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.app-table tbody tr:hover {
+  background: #f8fbfa;
+}
+
+.empty-state {
+  padding: 2.5rem 1rem !important;
+  color: var(--app-muted);
+  text-align: center;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.acceptance-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.acceptance-details {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.acceptance-details h2 {
+  margin: 0 0 1rem;
+  color: var(--app-text);
+  font-size: 1.35rem;
+}
+
+.clinical-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.clinical-form > div:first-child {
+  gap: 1rem;
+}
+
+.clinical-form p-fieldset {
+  min-width: min(100%, 330px);
+  flex: 1 1 330px;
+}
+
+.clinical-form p-fieldset > div {
+  padding: 0.65rem 0.75rem;
+}
+
+.clinical-form input,
+.clinical-form textarea,
+.clinical-form p-select,
+.clinical-form p-datepicker {
+  width: 100% !important;
+}
+
+.clinical-actions {
+  display: flex;
+  gap: 0.65rem;
+  padding-top: 0.25rem;
+}
+
+.my-app-dark {
+  --app-bg: #111817;
+  --app-surface: #192321;
+  --app-surface-soft: #202d2a;
+  --app-border: #344440;
+  --app-text: #edf4f2;
+  --app-muted: #a8b7b3;
+  --app-accent: #45b9ae;
+  --app-accent-strong: #65ccc2;
+  --app-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+.my-app-dark .field-label,
+.my-app-dark .form-panel label {
+  color: #d8e4e1;
+}
+
+.my-app-dark .app-table tbody tr:hover {
+  background: #202d2a;
+}
+
+.my-app-dark .app-table td {
+  border-color: #2d3c39;
+}
+
+@media (max-width: 720px) {
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-header .toolbar-actions {
+    width: 100%;
+  }
+
+  .page-header .toolbar-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .form-panel {
+    padding: 1rem;
+  }
+}
